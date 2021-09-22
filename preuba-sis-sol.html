@@ -1,0 +1,120 @@
+<html>
+
+<head>
+   <title>Canvas Ejemplo Sistema Solar</title>
+   <script>
+      var elemento;
+      var contexto;
+
+      window.onload = function () {
+         cargaContextoCanvas('micanvas');
+         traerDiaDeApi();
+
+      }
+
+      function cargaContextoCanvas(idCanvas) {
+         elemento = document.getElementById(idCanvas);
+         contexto = elemento.getContext('2d');
+      }
+
+      async function traerDiaDeApi() {
+         var diaDelSol = document.getElementById('imputdia').value;
+
+         console.log(diaDelSol);
+
+         if (diaDelSol != "") {
+            return await fetch('http://127.0.0.1:8080/sissol/getdia?dia=' + diaDelSol)
+               .then(res => res.json())
+               .then(json => {
+                  dibijar_dia(json);
+               })
+         }
+      }
+
+
+      function dibijar_dia(json) {
+         var pointSize = 4;
+         // Borro lienzo
+         contexto.clearRect(0, 0, elemento.width, elemento.height);
+         contexto.translate(250, 250);
+
+         //Dibujo Sol
+         contexto.beginPath();
+         contexto.fillStyle = "yellow";
+         contexto.arc(0, 0, 10, 0, Math.PI * 2, true);
+         contexto.fill();
+
+         //Dibujo Planeta 1
+         contexto.beginPath();
+         contexto.fillStyle = "green"; 
+         contexto.arc(json.corRecXP1 / 10, json.corRecYP1 / 10, pointSize, 0, Math.PI * 2, true);
+         contexto.fill();
+
+         //Dibujo Orbita Planeta 1
+         contexto.beginPath();
+         contexto.strokeStyle = "green"; 
+         contexto.arc(0, 0, json.disPolP1 / 10, 0, 2 * Math.PI, true);
+         contexto.stroke();
+
+          //Dibujo Planeta 2
+         contexto.beginPath();
+         contexto.fillStyle = "red"; 
+         contexto.arc(json.corRecXP2 / 10, json.corRecYP2 / 10, pointSize, 0, Math.PI * 2, true);
+         contexto.fill();
+
+         //Dibujo Orbita Planeta 2
+         contexto.beginPath();
+         contexto.strokeStyle = "red"; 
+         contexto.arc(0, 0, json.disPolP2 / 10, 0, 2 * Math.PI, true);
+         contexto.stroke();
+
+          //Dibujo Planeta 3
+         contexto.beginPath();
+         contexto.fillStyle = "blue"; 
+         contexto.arc(json.corRecXP3 / 10, json.corRecYP3 / 10, pointSize, 0, Math.PI * 2, true);
+         contexto.fill();
+
+         //Dibujo Orbita Planeta 3
+         contexto.beginPath();
+         contexto.strokeStyle = "blue";
+         contexto.arc(0, 0, json.disPolP3 / 10, 0, 2 * Math.PI, true);
+         contexto.stroke();
+
+         //  Dibujo Lineas entre Planetas
+         contexto.beginPath();
+         contexto.lineWidth = 1;
+         contexto.strokeStyle = "black";
+         contexto.moveTo(json.corRecXP1 / 10, json.corRecYP1 / 10);
+         contexto.lineTo(json.corRecXP2 / 10, json.corRecYP2 / 10);
+         contexto.stroke();
+
+         contexto.beginPath();
+         contexto.lineWidth = 1;
+         contexto.moveTo(json.corRecXP2 / 10, json.corRecYP2 / 10);
+         contexto.lineTo(json.corRecXP3 / 10, json.corRecYP3 / 10);
+         contexto.stroke();
+
+         contexto.beginPath();
+         contexto.lineWidth = 1;
+         contexto.moveTo(json.corRecXP1 / 10, json.corRecYP1 / 10);
+         contexto.lineTo(json.corRecXP3 / 10, json.corRecYP3 / 10);
+         contexto.stroke();
+
+         contexto.translate(-250, -250);
+
+      }
+
+   </script>
+
+</head>
+
+<body>
+   <input type="text" value="" id="imputdia" />
+   <input type="button" value="click" OnClick="traerDiaDeApi()" />
+   <canvas id="micanvas" width="500" height="500">
+      Tu navegador no soporta canvas.
+   </canvas>
+
+</body>
+
+</html>
